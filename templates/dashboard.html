@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Minecraft Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e1e2f;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #111122;
+            padding: 1rem 2rem;
+            text-align: center;
+            border-bottom: 2px solid #2a2a3d;
+        }
+        header h1 {
+            margin: 0;
+            color: #4fd1c5;
+        }
+        .container {
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+        .card {
+            background-color: #2a2a3d;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+        .card h2 {
+            margin-top: 0;
+            color: #81e6d9;
+            font-size: 1.2rem;
+            border-bottom: 1px solid #3a3a4d;
+            padding-bottom: 0.5rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 0.5rem;
+            text-align: left;
+        }
+        th {
+            color: #a0aec0;
+            border-bottom: 1px solid #3a3a4d;
+        }
+        .status-online { color: #48bb78; font-weight: bold; }
+        .status-joined { color: #4fd1c5; font-weight: bold; }
+        .status-left { color: #f6ad55; font-weight: bold; }
+        .status-offline { color: #f56565; font-weight: bold; }
+        .controls {
+            text-align: center;
+            margin: 1.5rem;
+        }
+        button {
+            background-color: #4fd1c5;
+            color: #111122;
+            border: none;
+            border-radius: 6px;
+            padding: 0.6rem 1.2rem;
+            margin: 0.3rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s ease;
+        }
+        button:hover {
+            background-color: #38b2ac;
+        }
+        .footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: #111122;
+            color: #888;
+            font-size: 0.85rem;
+            border-top: 2px solid #2a2a3d;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Minecraft Server Dashboard</h1>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>Players</h2>
+            <p><strong>Online:</strong> {{ data.player_count }} / {{ data.max_players }}</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for player, info in status.players.items() %}
+                        <tr>
+                            <td>{{ player }}</td>
+                            <td class="status-{{ info.status }}">{{ info.status }}</td>
+                        </tr>
+                    {% endfor %}
+                    {% if not status.players %}
+                        <tr><td colspan="2">No players tracked yet</td></tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>World Info</h2>
+            <p><strong>Clock:</strong> {{ data.time_clock }}</p>
+            <p><strong>Period:</strong> {{ data.time_period }}</p>
+            <p><strong>Seed:</strong> {{ data.seed }}</p>
+            <p><strong>Difficulty:</strong> {{ data.difficulty }}</p>
+            <p><strong>Version:</strong> {{ data.version }}</p>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button onclick="toggleAutoRefresh()" id="autoBtn">Disable Auto Refresh</button>
+        <button onclick="manualRefresh()">Refresh Now</button>
+    </div>
+
+    <div class="footer">
+        <em>Java Edition 1.21.x — Player status tracking with dark theme</em>
+    </div>
+
+    <script>
+        let autoRefresh = true;
+        let intervalTime = 15000; // 15 seconds
+        let intervalId = setInterval(manualRefresh, intervalTime);
+
+        function manualRefresh() {
+            location.reload(); // reloads the dashboard, background thread already updates JSON
+        }
+
+        function toggleAutoRefresh() {
+            autoRefresh = !autoRefresh;
+            const btn = document.getElementById('autoBtn');
+            if (autoRefresh) {
+                btn.textContent = "Disable Auto Refresh";
+                intervalId = setInterval(manualRefresh, intervalTime); // every 15s
+            } else {
+                btn.textContent = "Enable Auto Refresh";
+                clearInterval(intervalId);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,310 @@
+/* ===== Dashboard CSS (grouped & annotated) ===== */
+/* Purpose: visual styles for the mc_monitor dashboard.
+   Organized into sections: variables, base, layout, components,
+   data tables, status badges, widgets, controls, footer, utilities. */
+
+/* -----------------------------
+   Theme variables
+   Centralized color tokens and small notes about intent.
+   ----------------------------- */
+:root {
+    --emerald-green: #34C759;   /* primary accent */
+    --emerald-dark: #28A745;    /* hover/active accent */
+    --deep-slate:   #1E1E2F;    /* page background */
+    --charcoal-gray:#2C2C3C;    /* surfaces: cards, header, footer */
+    --cloud-white:  #F0F0F0;    /* primary text */
+    --iron-gray:    #A0A0A0;    /* secondary text, dividers */
+    --soft-gold:    #FFD580;    /* status: left/neutral */
+    --danger-red:   #FF3B30;    /* status: offline/critical */
+}
+
+
+/* -----------------------------
+   Base / global styles
+   Font, background and document-level resets
+   ----------------------------- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--deep-slate);
+    color: var(--cloud-white);
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+
+/* -----------------------------
+   Layout: header / main container
+   ----------------------------- */
+header {
+    background-color: var(--charcoal-gray);
+    padding: 1rem 2rem;
+    text-align: center;
+    border-bottom: 2px solid var(--emerald-green);
+}
+
+header h1 {
+    margin: 0;
+    color: var(--emerald-green);
+    font-size: 1.25rem;
+}
+
+.container {
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+
+/* -----------------------------
+   Component: card surface
+   Reusable surface for dashboard tiles
+   ----------------------------- */
+.card {
+    background-color: var(--charcoal-gray);
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+    color: var(--cloud-white);
+}
+
+.card h2 {
+    margin-top: 0;
+    color: var(--emerald-green);
+    font-size: 1.2rem;
+    border-bottom: 1px solid var(--iron-gray);
+    padding-bottom: 0.5rem;
+}
+
+/* -----------------------------
+   Component: sub-card
+   Modular sections inside a larger card
+   ----------------------------- */
+.sub-card {
+    background-color: var(--charcoal-gray);
+    border: 1px solid var(--iron-gray);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.sub-card h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    color: var(--emerald-green);
+    border-bottom: 1px solid var(--iron-gray);
+    padding-bottom: 4px;
+}
+
+.sub-card ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.sub-card li {
+    margin-bottom: 0.3rem;
+    color: var(--cloud-white);
+    font-weight: bold;
+}
+
+.sub-card .label {
+    color: var(--iron-gray);
+    margin-right: 0.4rem;
+}
+
+.sub-card-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+}
+
+
+/* -----------------------------
+   Data tables
+   Generic table styling for player lists and snapshots
+   ----------------------------- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 0.5rem;
+    text-align: left;
+}
+
+th {
+    color: var(--iron-gray);
+    border-bottom: 1px solid var(--iron-gray);
+    font-weight: 600;
+}
+
+
+/* -----------------------------
+   Status badges
+   Small utility classes applied to status cells/text
+   ----------------------------- */
+.status-online  { color: var(--emerald-green); font-weight: bold; }
+.status-joined  { color: var(--cloud-white);   font-weight: bold; }
+.status-left    { color: var(--soft-gold);     font-weight: bold; }
+.status-offline { color: var(--danger-red);    font-weight: bold; }
+
+
+/* -----------------------------
+   Widget: World time / small lists
+   Encapsulated widget styles
+   ----------------------------- */
+.world-time {
+    margin-top: 0.5rem;
+    padding: 0.8rem;
+    background-color: var(--charcoal-gray);
+    border-radius: 6px;
+    border: 1px solid var(--iron-gray);
+}
+
+.world-time h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--emerald-green);
+    font-size: 1rem;
+}
+
+.world-time ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.world-time li {
+    margin: 0.3rem 0;
+    color: var(--cloud-white);
+    font-weight: bold;
+}
+
+.world-time .label {
+    color: var(--iron-gray);
+    margin-right: 0.3rem;
+}
+
+
+/* -----------------------------
+   Copyable text
+   Styles for clickable/copyable elements
+   ----------------------------- */
+.copyable {
+  cursor: pointer;
+  color: var(--emerald-green);
+  position: relative; /* anchor for tooltip */
+  transition: color 0.2s ease, transform 0.1s ease;
+}
+
+.copyable:hover {
+  color: var(--emerald-dark);
+  text-decoration: underline;
+  transform: scale(1.02);
+}
+
+.copyable:active {
+  color: var(--soft-gold);
+  transform: scale(0.98);
+}
+
+/* Tooltip styling */
+.copyable::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  /* top: -30px; */
+  left: 105%;
+  /* transform: translateY(-50%); */
+  background-color: var(--deep-slate);
+  color: var(--cloud-white);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+/* Show tooltip on hover */
+.copyable:hover::after {
+  opacity: 1;
+}
+
+/* Show "Copied!" after click */
+.copyable.show-tooltip::after {
+  content: attr(data-clicked);
+  background-color: var(--cloud-white);
+  color: var(--deep-slate);
+  opacity: 1;
+  animation: fadeOut 1.5s forwards;
+}
+
+
+/* -----------------------------
+   Controls: buttons and actions
+   Primary action styling and hover state
+   ----------------------------- */
+.controls {
+    text-align: center;
+    margin: 1.5rem;
+}
+
+button {
+    background-color: var(--emerald-green);
+    color: var(--deep-slate);
+    border: none;
+    border-radius: 6px;
+    padding: 0.6rem 1.2rem;
+    margin: 0.3rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease, transform 0.08s ease;
+}
+
+button:hover {
+    background-color: var(--emerald-dark);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+
+/* -----------------------------
+   Footer
+   ----------------------------- */
+.footer {
+    text-align: center;
+    padding: 1rem;
+    background-color: var(--charcoal-gray);
+    color: var(--iron-gray);
+    font-size: 0.85rem;
+    border-top: 2px solid var(--emerald-green);
+}
+
+
+/* -----------------------------
+   Utilities & responsiveness
+   Small helpers; keep at bottom for easy overrides
+   ----------------------------- */
+@media (max-width: 520px) {
+    .container { padding: 1rem; gap: 1rem; }
+    header { padding: 0.8rem 1rem; }
+}
+
+/* -----------------------------
+   Keyframe animations
+   ----------------------------- */
+@keyframes fadeOut {
+    0%   { opacity: 1; }
+    80%  { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* End of file */

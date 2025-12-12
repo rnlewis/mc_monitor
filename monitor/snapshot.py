@@ -1,21 +1,32 @@
+from __future__ import annotations
+
+from monitor.models.version import Version
 from . import save_file
+from monitor.utils.time_utils import TimeUtils
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from rcon_monitor import RconMonitor
 
 
 class Snapshot:
     """Represents a single snapshot of server state."""
 
-    def __init__(self, player_count=0, max_players=0, players=None,
-                 daytime_ticks=0, time_clock="", time_period="",
-                 seed="", difficulty="", version="", error="", path=None):
+    def __init__(self, monitor: RconMonitor, player_count=0, max_players=0, players=None,
+                 daytime_ticks=0, time_clock="", time_period="", time_dhms=None,
+                 seed="", difficulty="", version=None, error="", path=None):
+        self.monitor = monitor
+
         self.player_count = player_count
         self.max_players = max_players
         self.players = players or []
         self.daytime_ticks = daytime_ticks
         self.time_clock = time_clock
         self.time_period = time_period
+        self.time_dhms = time_dhms or TimeUtils.DHMS()
         self.seed = seed
         self.difficulty = difficulty
-        self.version = version
+        self.version = version or Version()
         self.error = error
         self.path = path
 
@@ -25,40 +36,43 @@ class Snapshot:
         self.max_players = 0
         self.players = []
         self.daytime_ticks = 0
+        self.gametime_ticks = 0
         self.time_clock = ""
         self.time_period = ""
+        self.time_dhms = TimeUtils.DHMS()
         self.seed = ""
         self.difficulty = ""
-        self.version = ""
+        self.version = Version()
         self.error = ""
 
-    def update_meta(self, monitor):
+    def update_meta(self):
         """Enrich snapshot with meta info."""
         try:
-            daytime_ticks = monitor.get_ticks()
+            daytime_ticks = self.monitor.commander.get_daytime_ticks()
             self.daytime_ticks = daytime_ticks
-            self.time_clock = monitor.ticks_to_clock(daytime_ticks)
-            self.time_period = monitor.ticks_to_period(daytime_ticks)
-            self.seed = monitor.send_command("seed").strip()
-            self.difficulty = monitor.send_command("difficulty").strip()
-            self.version = monitor.send_command(
-                "version").strip().splitlines()[0]
+            gametime_ticks = self.monitor.commander.get_game_ticks()
+            self.gametime_ticks = gametime_ticks
+            self.time_clock = TimeUtils.ticks_to_clock(daytime_ticks)
+            self.time_period = TimeUtils.ticks_to_period(daytime_ticks)
+            self.time_dhms = TimeUtils.gametime_ticks_to_dhms(gametime_ticks)
+            self.seed = self.monitor.commander.get_seed()
+            self.difficulty = self.monitor.commander.get_difficulty()
+            self.version = self.monitor.commander.get_version()
         except Exception as e:
             self.error = str(e)
 
-    def get_player_snapshot(self, monitor):
+    def get_player_snapshot(self):
         """Pull /list and update snapshot players."""
-        list_resp = monitor.send_command("list")
-        parsed = monitor.parse_list(list_resp)
-        self.player_count = parsed["player_count"]
-        self.max_players = parsed["max_players"]
-        self.players = parsed["players"]
+        player_data = self.monitor.commander.get_player_data()
+        self.player_count = player_data["player_count"]
+        self.max_players = player_data["max_players"]
+        self.players = player_data["players"]
 
-    def update_data(self, monitor):
+    def update_data(self):
         """Update snapshot data from server."""
         self.reset()
-        self.update_meta(monitor)
-        self.get_player_snapshot(monitor)
+        self.update_meta()
+        self.get_player_snapshot()
 
         if not self.error:
             save_file(self.path, self.to_dict())
@@ -72,11 +86,13 @@ class Snapshot:
             "max_players": self.max_players,
             "players": self.players,
             "time_daytime_ticks": self.daytime_ticks,
+            "time_gametime_ticks": self.gametime_ticks,
             "time_clock": self.time_clock,
             "time_period": self.time_period,
+            "time_dhms": self.time_dhms.to_dict(),
             "seed": self.seed,
             "difficulty": self.difficulty,
-            "version": self.version,
+            "version": self.version.to_dict(),
             "error": self.error,
         }
 

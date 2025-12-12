@@ -1,10 +1,18 @@
+from __future__ import annotations
 from . import load_file, save_file
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from rcon_monitor import RconMonitor
 
 
 class Status:
     """Tracks player join/leave events and notification state."""
 
-    def __init__(self, path=None):
+    def __init__(self, monitor: RconMonitor, path=None):
+
+        self.monitor = monitor
+
         self.players = {}   # {player_name: {"status": "online/joined/left/offline"}}
         self.notify = 0     # flag for whether a notification should be sent
         self.message = ""   # accumulated join/leave messages
@@ -12,8 +20,8 @@ class Status:
 
         self.load()
 
-    def update_player_status(self, monitor):
-        current_players = monitor.snapshot.players
+    def update_player_status(self):
+        current_players = self.monitor.snapshot.players
         tracked = self.players
         notify_flag = 0
         message_log = ""
@@ -45,7 +53,7 @@ class Status:
         self.message = message_log.strip()
 
         if notify_flag and message_log:
-            monitor.send_ntfy(self.message)
+            self.monitor.send_ntfy(self.message)
 
         self.save()
 

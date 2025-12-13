@@ -23,16 +23,16 @@ class Commander:
         response = self.monitor.send_command('list')
         match = re.search(
             r"There are (\d+) of a max of (\d+) players online", response)
-        player_count, max_players, players = 0, 0, []
+        player_count, max_players, player_names = 0, 0, []
         if match:
             player_count, max_players = int(
                 match.group(1)), int(match.group(2))
         if ":" in response:
             players_str = response.split(":", 1)[1].strip()
             if players_str:
-                players = [p.strip()
-                           for p in players_str.split(",") if p.strip()]
-        return {"player_count": player_count, "max_players": max_players, "players": players}
+                player_names = [p.strip()
+                                for p in players_str.split(",") if p.strip()]
+        return {"player_count": player_count, "max_players": max_players, "player_names": player_names}
 
     def get_daytime_ticks(self):
         """Get current daytime ticks from server."""

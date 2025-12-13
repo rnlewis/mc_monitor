@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, send_from_directory
 import threading
 from monitor.rcon_monitor import RconMonitor
 
@@ -19,6 +19,11 @@ def dashboard():
 @app.route("/players")
 def players():
     return jsonify(monitor.status.to_dict())
+
+
+@app.route('/data/faces/<player_name>')
+def faces(player_name):
+    return send_from_directory('data/face', player_name + ".png")
 
 
 if __name__ == "__main__":

@@ -144,16 +144,83 @@ th {
     font-weight: 600;
 }
 
-
 /* -----------------------------
    Status badges
    Small utility classes applied to status cells/text
    ----------------------------- */
-.status-online  { color: var(--emerald-green); font-weight: bold; }
-.status-joined  { color: var(--cloud-white);   font-weight: bold; }
-.status-left    { color: var(--soft-gold);     font-weight: bold; }
-.status-offline { color: var(--danger-red);    font-weight: bold; }
+.status-online  { --status-color: var(--emerald-green); font-weight: bold; }
+.status-joined  { --status-color: var(--soft-gold);   font-weight: bold; }
+.status-left    { --status-color: var(--soft-gold);     font-weight: bold; }
+.status-offline { --status-color: var(--danger-red);    font-weight: bold; }
 
+/* -----------------------------
+   Players table styling
+   ----------------------------- */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: var(--charcoal-gray);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+}
+
+/* Header row */
+table th {
+    background-color: var(--deep-slate);
+    color: var(--emerald-green);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.75rem;
+    border-bottom: 2px solid var(--emerald-green);
+}
+
+/* Table rows */
+table tbody tr {
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: var(--deep-slate); /* subtle striping */
+}
+
+/* Player name cell */
+tbody td.player-name {
+    font-weight: bold;
+    color: var(--cloud-white);
+    text-shadow: 0 0 1px var(--cloud-white);
+}
+
+/* Player status cell */
+tbody td.player-status {
+    color: var(--status-color);
+    text-shadow: 0 0 2px var(--status-color);
+    font-weight: bold;
+}
+
+/* Player face images */
+.player-face {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    margin-right: 0.5em;
+    vertical-align: middle;
+    border: 2px solid var(--deep-slate);
+    box-shadow: 0 0 6px var(--cloud-white);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Glow effect on hover */
+tbody tr:hover {
+    box-shadow: 0 0 4px var(--cloud-white) inset;
+}
+tbody tr:hover .player-face {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px var(--cloud-white);
+    animation: bob 1.5s ease-in-out infinite;
+}
 
 /* -----------------------------
    Widget: World time / small lists
@@ -306,5 +373,15 @@ button:active {
     80%  { opacity: 1; }
     100% { opacity: 0; }
 }
+
+@keyframes bob {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
 
 /* End of file */

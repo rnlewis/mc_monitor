@@ -1,6 +1,7 @@
 from __future__ import annotations
 from . import load_file, save_file
 from typing import TYPE_CHECKING
+from .models.player import Player
 
 if TYPE_CHECKING:
     from rcon_monitor import RconMonitor
@@ -13,40 +14,51 @@ class Status:
 
         self.monitor = monitor
 
-        self.players = {}   # {player_name: {"status": "online/joined/left/offline"}}
+        self.players: dict[str, Player] = {}  # {player_name: Player}
         self.notify = 0     # flag for whether a notification should be sent
         self.message = ""   # accumulated join/leave messages
         self.path = path
 
         self.load()
 
+    def player_manager(self, players: list[str]) -> dict[str, Player]:
+        player_dict = {}
+        for pname in players:
+            player_dict[pname] = Player(username=pname)
+        return player_dict
+
     def update_player_status(self):
-        current_players = self.monitor.snapshot.players
+        current_players = self.monitor.snapshot.player_names
         tracked = self.players
         notify_flag = 0
         message_log = ""
 
         # join/leave logic
-        for player in current_players:
-            if player not in tracked or tracked[player]["status"] in ("offline", "left"):
-                tracked[player] = {"status": "joined"}
+        for player_name in current_players:
+            if player_name not in tracked or tracked[player_name].status in ("offline", "left"):
+                player = tracked.get(player_name) or Player(
+                    username=player_name)
+                player.update_status("joined")
+                tracked[player_name] = player
                 notify_flag = 1
-                message_log += f"{player} has joined the server!\n"
-            elif tracked[player]["status"] == "joined":
-                tracked[player]["status"] = "online"
+                message_log += f"{player_name} has joined the server!\n"
+            elif tracked[player_name].status == "joined":
+                tracked[player_name].status = "online"
 
-        for player in list(tracked.keys()):
-            if player not in current_players:
-                if tracked[player]["status"] == "online":
-                    tracked[player]["status"] = "left"
+        for player in list(tracked.values()):
+            if player.username not in current_players:
+                if player.status == "online":
+                    player.update_status("left")
                     notify_flag = 1
-                    message_log += f"{player} has left the server.\n"
-                elif tracked[player]["status"] == "left":
-                    tracked[player]["status"] = "offline"
-                elif tracked[player]["status"] == "joined":
-                    tracked[player]["status"] = "left"
+                    message_log += f"{player.username} has left the server.\n"
+                elif player.status == "left":
+                    player.update_status("offline")
+                elif player.status == "joined":
+                    player.update_status("left")
                     notify_flag = 1
-                    message_log += f"{player} has left the server.\n"
+                    message_log += f"{player.username} has left the server.\n"
+
+            tracked[player.username] = player
 
         self.players = tracked
         self.notify = notify_flag
@@ -61,7 +73,7 @@ class Status:
 
     def to_dict(self):
         return {
-            "players": self.players,
+            "players": {player.username: player.to_dict() for player in self.players.values()},
             "notify": self.notify,
             "message": self.message,
         }
@@ -73,7 +85,8 @@ class Status:
     def load(self):
         if self.path:
             loaded = load_file(self.path, {"players": {}})
-            self.players = loaded.get("players", {})
+            player_names = list(loaded["players"].keys())
+            self.players = self.player_manager(player_names)
             self.notify = loaded.get("notify", 0)
             self.message = loaded.get("message", "")
 

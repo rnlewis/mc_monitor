@@ -14,27 +14,33 @@
     <div class="container">
         <div class="card">
             <h2>Players</h2>
-            <p><strong>Online:</strong> {{ data.player_count }} / {{ data.max_players }}</p>
-            <table>
+            <table class="players">
+                
                 <thead>
-                    <tr>
-                        <th>Player</th>
-                        <th>Status</th>
-                    </tr>
+                <tr>
+                    <th>Online: {{ data.player_count }} / {{ data.max_players }}</th>
+                    <th>Player</th>
+                    <th>Status</th>
+                </tr>
                 </thead>
-                <tbody>
-                    {% for player, info in status.players.items() %}
-                        <tr>
-                            <td>{{ player }}</td>
-                            <td class="status-{{ info.status }}">{{ info.status }}</td>
-                        </tr>
-                    {% endfor %}
-                    {% if not status.players %}
-                        <tr><td colspan="2">No players tracked yet</td></tr>
-                    {% endif %}
+                <tbody class="players">
+                {% for player_name, player in status.players.items() %}
+                    <tr class="player status-{{ player.status }}">
+                    <td>
+                        <img src="/data/faces/{{ player.username }}"
+                            alt="{{ player.username }}'s face"
+                            class="player-face">
+                    </td>
+                    <td class="player-name">{{ player_name }}</td>
+                    <td class="player-status">{{ player.status }}</td>
+                    </tr>
+                {% endfor %}
+                {% if not status.players %}
+                    <tr><td colspan="3">No players tracked yet</td></tr>
+                {% endif %}
                 </tbody>
             </table>
-        </div>
+            </div>
 
         <div class="card">
             <h2>World Info</h2>

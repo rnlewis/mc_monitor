@@ -12,14 +12,14 @@ if TYPE_CHECKING:
 class Snapshot:
     """Represents a single snapshot of server state."""
 
-    def __init__(self, monitor: RconMonitor, player_count=0, max_players=0, players=None,
+    def __init__(self, monitor: RconMonitor, player_count=0, max_players=0, player_names=None,
                  daytime_ticks=0, time_clock="", time_period="", time_dhms=None,
                  seed="", difficulty="", version=None, error="", path=None):
         self.monitor = monitor
 
         self.player_count = player_count
         self.max_players = max_players
-        self.players = players or []
+        self.player_names = player_names or []
         self.daytime_ticks = daytime_ticks
         self.time_clock = time_clock
         self.time_period = time_period
@@ -34,7 +34,7 @@ class Snapshot:
         """Reset snapshot data."""
         self.player_count = 0
         self.max_players = 0
-        self.players = []
+        self.player_names = []
         self.daytime_ticks = 0
         self.gametime_ticks = 0
         self.time_clock = ""
@@ -66,7 +66,7 @@ class Snapshot:
         player_data = self.monitor.commander.get_player_data()
         self.player_count = player_data["player_count"]
         self.max_players = player_data["max_players"]
-        self.players = player_data["players"]
+        self.player_names = player_data["player_names"]
 
     def update_data(self):
         """Update snapshot data from server."""
@@ -84,7 +84,7 @@ class Snapshot:
         return {
             "player_count": self.player_count,
             "max_players": self.max_players,
-            "players": self.players,
+            "player_names": self.player_names,
             "time_daytime_ticks": self.daytime_ticks,
             "time_gametime_ticks": self.gametime_ticks,
             "time_clock": self.time_clock,

@@ -21,6 +21,8 @@ class Snapshot:
         self.max_players = max_players
         self.player_names = player_names or []
         self.daytime_ticks = daytime_ticks
+        self.gametime_ticks = 0
+        self.gametime_ticks_updated = False
         self.time_clock = time_clock
         self.time_period = time_period
         self.time_dhms = time_dhms or TimeUtils.DHMS()
@@ -36,7 +38,7 @@ class Snapshot:
         self.max_players = 0
         self.player_names = []
         self.daytime_ticks = 0
-        self.gametime_ticks = 0
+        self.gametime_ticks_updated = False
         self.time_clock = ""
         self.time_period = ""
         self.time_dhms = TimeUtils.DHMS()
@@ -51,6 +53,8 @@ class Snapshot:
             daytime_ticks = self.monitor.commander.get_daytime_ticks()
             self.daytime_ticks = daytime_ticks
             gametime_ticks = self.monitor.commander.get_game_ticks()
+            self.gametime_ticks_updated = self.check_gametime_ticks_updated(
+                gametime_ticks)
             self.gametime_ticks = gametime_ticks
             self.time_clock = TimeUtils.ticks_to_clock(daytime_ticks)
             self.time_period = TimeUtils.ticks_to_period(daytime_ticks)
@@ -79,6 +83,10 @@ class Snapshot:
 
         return self
 
+    def check_gametime_ticks_updated(self, gametime_ticks) -> bool:
+        """Check if gametime ticks were updated in last snapshot."""
+        return self.gametime_ticks not in (0, gametime_ticks)
+
     def to_dict(self):
         """Convert snapshot to a JSON‑friendly dict."""
         return {
@@ -87,6 +95,7 @@ class Snapshot:
             "player_names": self.player_names,
             "time_daytime_ticks": self.daytime_ticks,
             "time_gametime_ticks": self.gametime_ticks,
+            "server_status": "Running" if self.gametime_ticks_updated else "Idle",
             "time_clock": self.time_clock,
             "time_period": self.time_period,
             "time_dhms": self.time_dhms.to_dict(),

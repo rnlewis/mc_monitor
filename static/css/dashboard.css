@@ -83,7 +83,7 @@ header h1 {
    Modular sections inside a larger card
    ----------------------------- */
 .sub-card {
-    background-color: var(--charcoal-gray);
+    background-color: var(--deep-slate);
     border: 1px solid var(--iron-gray);
     border-radius: 8px;
     padding: 1rem;
@@ -186,11 +186,20 @@ table tbody tr:nth-child(even) {
     background-color: var(--deep-slate); /* subtle striping */
 }
 
+table tbody td {
+    border-bottom: 1px solid var(--iron-gray);
+    vertical-align: middle;
+    text-align: left;
+}
+
 /* Player name cell */
 tbody td.player-name {
     font-weight: bold;
     color: var(--cloud-white);
     text-shadow: 0 0 1px var(--cloud-white);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
 /* Player status cell */
@@ -205,8 +214,6 @@ tbody td.player-status {
     width: 32px;
     height: 32px;
     border-radius: 4px;
-    margin-right: 0.5em;
-    vertical-align: middle;
     border: 2px solid var(--deep-slate);
     box-shadow: 0 0 6px var(--cloud-white);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -223,39 +230,14 @@ tbody tr:hover .player-face {
 }
 
 /* -----------------------------
-   Widget: World time / small lists
+   Widget: World info
    Encapsulated widget styles
    ----------------------------- */
-.world-time {
-    margin-top: 0.5rem;
-    padding: 0.8rem;
-    background-color: var(--charcoal-gray);
-    border-radius: 6px;
-    border: 1px solid var(--iron-gray);
-}
 
-.world-time h3 {
-    margin: 0 0 0.5rem 0;
-    color: var(--emerald-green);
-    font-size: 1rem;
-}
 
-.world-time ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.world-time li {
-    margin: 0.3rem 0;
-    color: var(--cloud-white);
-    font-weight: bold;
-}
-
-.world-time .label {
-    color: var(--iron-gray);
-    margin-right: 0.3rem;
-}
+.server-status-Running  { color: var(--emerald-green); }
+.server-status-Idle  { color: var(--soft-gold); }
+.server-status-Offline  { color: var(--danger-red); }
 
 
 /* -----------------------------
@@ -288,6 +270,7 @@ tbody tr:hover .player-face {
   left: 105%;
   /* transform: translateY(-50%); */
   background-color: var(--deep-slate);
+  border: 1px solid var(--iron-gray);
   color: var(--cloud-white);
   padding: 4px 8px;
   border-radius: 4px;

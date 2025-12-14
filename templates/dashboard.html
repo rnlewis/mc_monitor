@@ -13,12 +13,11 @@
 
     <div class="container">
         <div class="card">
-            <h2>Players</h2>
+            <h2>Players {{ data.player_count }} of {{ data.max_players }}</h2>
             <table class="players">
                 
                 <thead>
                 <tr>
-                    <th>Online: {{ data.player_count }} / {{ data.max_players }}</th>
                     <th>Player</th>
                     <th>Status</th>
                 </tr>
@@ -26,13 +25,10 @@
                 <tbody class="players">
                 {% for player_name, player in status.players.items() %}
                     <tr class="player status-{{ player.status }}">
-                    <td>
-                        <img src="/data/faces/{{ player.username }}"
-                            alt="{{ player.username }}'s face"
-                            class="player-face">
-                    </td>
-                    <td class="player-name">{{ player_name }}</td>
-                    <td class="player-status">{{ player.status }}</td>
+                        <td class="player-name"><img src="/data/faces/{{ player.username }}"
+                     alt="{{ player.username }}'s face"
+                     class="player-face"> {{ player.username }}</td>
+                        <td class="player-status">{{ player.status }}</td>
                     </tr>
                 {% endfor %}
                 {% if not status.players %}
@@ -43,14 +39,18 @@
             </div>
 
         <div class="card">
-            <h2>World Info</h2>
+            <h2>Server</h2>
 
-            <!-- Group 1: Time + Seed -->
+            <!-- Group 1: World -->
             <div class="sub-card-group">
-                <!-- Time Overview -->
-                <div class="sub-card world-time">
-                    <h3>Time Overview</h3>
+                <!-- World Info -->
+                <div class="sub-card">
+                    <h3>World Info</h3>
                     <ul>
+                        <li>
+                            <span class="label">Server Status:</span>
+                            <span class="value server-status-{{ data.server_status }}">{{ data.server_status }}</span>
+                        </li>
                         <li>
                             <span class="label">World Age:</span>
                             Day {{ data.time_dhms.days }} — {{ data.time_dhms.hours }}h {{ data.time_dhms.minutes }}m {{ data.time_dhms.seconds }}s
@@ -62,30 +62,30 @@
                     </ul>
                 </div>
 
-                <!-- Seed -->
-                <div class="sub-card world-seed">
-                    <h3>Seed</h3>
-                    <p>
+                <!-- World Settings -->
+                <div class="sub-card">
+                    <h3>World Settings</h3>
+                    <ul>
+                        <!-- Seed -->
+                        <li><span class="label">Seed:</span>
                         <span class="copyable"
                             onclick="copySeed(this)"
                             data-tooltip="Click to copy"
                             data-clicked="Copied!">
                             {{ data.seed }}
                         </span>
-                    </p>
+                        </li>
+                        <!-- Difficulty -->
+                        <li><span class="label">Difficulty:</span> {{ data.difficulty }}</li>
+                    </ul>
                 </div>
             </div>
 
-            <!-- Group 2: Difficulty + Version -->
+            <!-- Group 2: Version -->
             <div class="sub-card-group">
-                <!-- Difficulty -->
-                <div class="sub-card world-difficulty">
-                    <h3>Difficulty</h3>
-                    <p>{{ data.difficulty }}</p>
-                </div>
 
                 <!-- Version Info -->
-                <div class="sub-card world-version">
+                <div class="sub-card">
                     <h3>Version Info</h3>
                     <ul>
                         <li><span class="label">ID:</span> {{ data.version.id }}</li>
